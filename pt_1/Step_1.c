@@ -37,6 +37,7 @@ void SimpleThread(int which){
     }
   }
   counter++;
+  // waits for all threads to complete
   while( counter < thread_count){
   }
   val = SharedVariable;

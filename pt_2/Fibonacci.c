@@ -3,7 +3,7 @@
 #include <pthread.h> 
 #include <unistd.h>
 
-int* arr = NULL;
+int* arr = NULL; //shared array
 void *runner(void *param);
 
 int main(int argc, char* argv[]){
@@ -11,6 +11,7 @@ int main(int argc, char* argv[]){
   pthread_attr_t attr;
   int val;
   int i; 
+  //input validation
   if(argc != 2){
     fprintf(stderr,"usage: fibonacci <interger value>\n");
     return -1;
@@ -19,12 +20,14 @@ int main(int argc, char* argv[]){
     fprintf(stderr,"%d must be >= 0\n", val);
     return -1;
   }
+  //memory allocation check
   arr = (int*)malloc(sizeof(int) * (val + 1));
   if(arr == NULL){
     fprintf(stderr,"Error: memory was not allocated");
     return -1;
   }
-  
+  // initalize thread  
+
   pthread_attr_init(&attr);
 
   if(pthread_create(&tid,&attr,runner,argv[1]) != 0){
@@ -32,13 +35,14 @@ int main(int argc, char* argv[]){
     free(arr);
     return -1;
   }
-
+  //wait for thread to end
   pthread_join(tid,NULL);
 
-  
+  //print results
   for(i = 0; i < (val + 1); i++){
     printf("Value %d = %d\n",i,*(arr + i));
   }
+  //cleanup 
   free(arr);
   return 0;
 }
