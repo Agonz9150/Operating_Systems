@@ -1,0 +1,15 @@
+Compile and run instructions ->
+
+Compile options ->
+    * 1 and 2 is for no mutex on threads
+      1) make Step_1
+      2) gcc Step_1 -o Step_1 -pthread
+ 
+    * 3 and 4 is for mutex on threads
+      3) make Step_1_2
+      4) gcc -D PTHREAD_SYNC -o Step_1 -pthread
+
+Run ->
+      ./Step_1 <int -> number of threads>
+
+Clean -> make Clean

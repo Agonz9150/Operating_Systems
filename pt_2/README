@@ -1,0 +1,11 @@
+How to compile and run
+
+Compile options ->
+   1) make Create
+   2) gcc Fibonacci.c -o fibonacci -pthread
+
+Run ->
+  ./fibonacci <int >= 0>
+
+clean -> 
+  make Clean
