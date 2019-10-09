@@ -9,7 +9,7 @@ void SimpleThread(int);
 int counter = 0;
 int thread_count = 0;
 pthread_mutex_t lock;
-
+pthread_barrier_t barr;
 int SharedVariable = 0;
 
 //Function for threads to latch on to
@@ -24,9 +24,10 @@ void SimpleThread(int which){
   int num,val;
   for(num = 0; num < 20; num++){
     #ifdef PTHREAD_SYNC // Mutex control
-    while(pthread_mutex_lock(&lock) != 0){
-      usleep(1);
-    }      
+    
+      while(pthread_mutex_lock(&lock) != 0){
+        usleep(1);
+      }      
     #endif
     val = SharedVariable;
     printf("*** thread %d sees value %d\n",which,val);
@@ -38,8 +39,13 @@ void SimpleThread(int which){
   }
   counter++;
   // waits for all threads to complete
-  while( counter < thread_count){
-  }
+  #ifdef PTHREAD_SYNC
+    int err = pthread_barrier_wait(&barr);
+    if(err && err != PTHREAD_BARRIER_SERIAL_THREAD){
+      fprintf(stderr,"Error -> wait for barrier failed");
+      exit(1); 
+    }
+  #endif
   val = SharedVariable;
   printf("Thread %d sees final value %d\n",which,val);
 }
@@ -62,7 +68,13 @@ int main(int argc, const char* argv[]){
     fprintf(stderr,"Error: mutex lock has failed");
     return 1;
   }
-
+  //barrier init
+  #ifdef PTHREAD_SYNC
+  if(pthread_barrier_init(&barr,NULL,thread_count)){
+      fprintf(stderr,"Error -> barrier failed");
+      return 1;
+    }
+  #endif
   int loop;
    
   long arr[thread_count];
